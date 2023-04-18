@@ -61,7 +61,7 @@ const routes = [
     component: Profile
   },
   {
-    path: '/orders/',
+    path: '/orders/:id',
     name: 'orders',
     component: Order
   },

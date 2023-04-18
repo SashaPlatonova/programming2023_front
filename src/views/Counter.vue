@@ -197,7 +197,9 @@ export default {
         })
     },
     timeToInt () {
-      return Date.parse(this.date_begin + 'T' + this.time_begin + ':00')
+      console.log(this.date_begin + 'T' + this.time_begin + ':00')
+      console.log(Date.parse(this.date_begin + 'T' + this.time_begin + ':00'))
+      return Date.parse(this.date_begin + 'T' + this.time_begin + ':00') / 1000
     }
   }
 }

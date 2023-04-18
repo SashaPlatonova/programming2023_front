@@ -134,7 +134,7 @@
     <v-btn text color="primary" @click="getCars('http://localhost:8000/api/transport/all?type='+$route.params.id)">Сбросить фильтр</v-btn>
 </div>
   </div>
-  <div class="button_add">
+  <div class="button_add" v-if="checkAdmin()">
   <v-btn v-if="$cookies.get('token')!=='error'"
           color="success"
           class="mt-4 button_add_item"
@@ -227,6 +227,12 @@ export default {
         .catch(function (error) {
           console.log(error)
         })
+    },
+    checkAdmin () {
+      if (this.$cookies.get('isAdmin') === 'true') {
+        return true
+      }
+      return false
     }
   },
   created () {

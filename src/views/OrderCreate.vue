@@ -58,7 +58,7 @@
     <v-btn
       color="success"
       class="mr-4"
-      @click="pushUser"
+      @click="send_order"
     >
       Подтвертить
     </v-btn>
@@ -83,7 +83,7 @@ export default {
   data: () => ({
     carInfo: '',
     carId: 0,
-    id: '',
+    id: 0,
     full_name: '',
     email: '',
     passport: '',
@@ -105,6 +105,14 @@ export default {
     ]
   }),
   methods: {
+    send_order () {
+      if (this.id === 0) {
+        this.pushUser()
+      } else {
+        this.updateUser('http://localhost:8000/api/residents/update/' + this.id + '/')
+        this.pushOrder()
+      }
+    },
     async pushUser () {
       await this.axios.post('http://localhost:8000/auth/users/', {
         full_name: this.full_name,
@@ -127,11 +135,11 @@ export default {
     },
     async pushOrder () {
       await this.axios.post('http://localhost:8000/api/order/create', {
-        order_name: 'Заказ машины:' + this.transport_id + ' Польз. ' + this.id,
+        order_name: 'Заказ машины:' + this.carId + ' Польз. ' + this.id,
         user_id: this.id,
         transport_id: this.carId,
         time_start: this.$route.params.date,
-        time_end: this.$route.params.date + (60 * 60 * 3)
+        time_end: Number(this.$route.params.date) + Number(60 * 60 * 3)
       },
       {
         headers: {
@@ -205,13 +213,38 @@ export default {
       }
       const time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min
       return time
+    },
+    async updateUser (url) {
+      await this.axios.put(url, {
+        full_name: this.full_name,
+        email: this.email,
+        passport: this.passport,
+        username: this.username,
+        password: this.password,
+        phone: this.phone
+      },
+      {
+        headers: {
+          Authorization: 'Token ' + this.$cookies.get('token').toString()
+        }
+      })
+        .then(response => {
+          console.log(response)
+          this.message = 'Ok'
+          this.$router.go()
+        })
+        .catch(error => {
+          this.message = 'Password is simple'
+          console.log(error)
+          this.$cookies.set('token', 'error')
+        })
     }
   },
   created () {
     const apiURl = 'http://localhost:8000/api/transport/all/' + this.$route.params.car + '/'
     this.getCars(apiURl)
     this.time_start = this.timeConverter(this.$route.params.date)
-    this.time_end = this.timeConverter(Number(this.$route.params.date) + (60 * 60 * 3))
+    this.time_end = this.timeConverter(Number(this.$route.params.date) + Number(60 * 60 * 3))
     const URl_ = 'http://localhost:8000/auth/users/me/'
     this.getUpdateItems(URl_)
   }

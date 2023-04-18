@@ -12,7 +12,7 @@
         class="card"
       />
   </v-row>
-  <div class="calendar">
+  <div class="calendar" v-if="checkAdmin()">
     <v-menu
         ref="menu"
         v-model="menu"
@@ -121,14 +121,9 @@
           <v-btn text color="primary" @click="$refs.menu_3.save(time_end)">OK</v-btn>
         </v-time-picker>
       </v-menu>
-    <label class="toggler-wrapper style-20">
-          <input type="checkbox" >
-          <div class="toggler-slider">
-            <div class="toggler-knob"></div>
-          </div>
-        </label>
+
     <br>
-    <v-btn text color="primary" @click="filter('http://localhost:8000/api/order/filter')">Фильтровать</v-btn>
+    <v-btn text color="primary" @click="filter('http://localhost:8000/api/order/filter/busy')">Фильтровать</v-btn>
     <v-btn text color="primary" @click="getOrders('http://localhost:8000/api/order/all')">Сбросить фильтр</v-btn>
 </div>
     </div>
@@ -189,6 +184,12 @@ export default {
         })
       this.type_id = this.$route.params.id
     },
+    checkAdmin () {
+      if (this.$cookies.get('isAdmin') === 'true') {
+        return true
+      }
+      return false
+    },
     // eslint-disable-next-line camelcase
     timeConverter (UNIX_timestamp) {
       // eslint-disable-next-line camelcase
@@ -231,7 +232,10 @@ export default {
     }
   },
   created () {
-    const apiURl = 'http://localhost:8000/api/order/all'
+    var apiURl = 'http://localhost:8000/api/order/all'
+    if (!(this.$cookies.get('isAdmin'))) {
+      apiURl = 'http://localhost:8000/api/order/all?user=' + this.$route.params.id
+    }
     this.getOrders(apiURl)
   }
 }

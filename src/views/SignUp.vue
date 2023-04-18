@@ -22,6 +22,11 @@
       label="ФИО"
       required
     ></v-text-field>
+    <v-text-field
+      v-model="username"
+      label="Username"
+      required
+    ></v-text-field>
   <v-text-field
       v-model="passport"
       label="Паспорт"
@@ -65,7 +70,8 @@ export default {
     full_name: '',
     passport: '',
     password: '',
-    message: ''
+    message: '',
+    username: ''
   }),
   methods: {
     async pushUser (url) {
@@ -74,6 +80,7 @@ export default {
         passport: this.passport,
         phone: this.phone,
         password: this.password,
+        username: this.username,
         message: ''
       })
         .then(response => {

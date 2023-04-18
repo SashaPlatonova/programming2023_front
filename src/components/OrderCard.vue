@@ -16,7 +16,7 @@
     </v-card-title>
 
     <v-card-subtitle>
-      Заказчик: {{ orderItem.user_id.last_name }} {{orderItem.user_id.first_name}}
+      Заказчик: {{ orderItem.user_id.full_name }}
     </v-card-subtitle>
     <v-card-actions>
       <v-btn
@@ -46,6 +46,7 @@
          Время: {{ orderItem.time_start }} - {{ orderItem.time_end }}
         </v-card-text>
       </div>
+      <v-btn v-if="checkDate" color="error">Отменить заказ</v-btn>
     </v-expand-transition>
   </v-card>
 </template>
@@ -58,6 +59,11 @@ export default {
   }),
   props: {
     orderItem: Object
+  },
+  methods: {
+    checkDate () {
+      return (new Date().getDate() > this.orderItem.time_end)
+    }
   }
 }
 </script>

@@ -15,7 +15,7 @@
     <p @click="$router.push('/types')
     $router.go()">Посмотреть инфорацию о досутпном транспорте</p>
 
-    <a href="http://localhost:8080/types">Click me</a>
+    <a href="http://localhost:8080/types">Click</a>
    </div>
   </div>
  </div>
@@ -31,9 +31,9 @@
   </div>
   <div class="face face2">
    <div class="content">
-    <p>Посмотреть бронирования</p>
-    <a @click="$router.push('/orders/')
-        $router.go()">Click me</a>
+    <p>Посмотреть заказы</p>
+    <a @click="$router.push('/orders/'+id)
+        $router.go()">Click</a>
    </div>
   </div>
  </div>
@@ -51,7 +51,7 @@
    <div class="content">
     <p>Нажмите, чтобы подобрать машину</p>
     <a @click="$router.push('/filter/')
-        $router.go()">Click me</a>
+        $router.go()">Click</a>
    </div>
   </div>
  </div>
@@ -125,6 +125,7 @@ export default {
           this.username = res.data.username
           this.password = res.data.password
           this.getUserInfo('http://localhost:8000/api/residents/all/' + this.id + '/')
+          this.checkIsAdmin(res.data.id)
         })
         .catch(err => {
           console.log('error displaying subdivisionItem', err)
@@ -145,6 +146,16 @@ export default {
         })
         .catch(err => {
           console.log('error displaying subdivisionItem', err)
+        })
+    },
+    async checkIsAdmin (id) {
+      await this.axios.get('http://localhost:8000/api/residents/all/' + id + '/', { headers: { Authorization: 'Token ' + this.$cookies.get('token').toString() } })
+        .then(res => {
+          this.$cookies.set('isAdmin', res.data.is_superuser)
+        })
+        .catch(err => {
+          console.log('error displaying subdivisionItem', err)
+          this.$cookies.set('isAdmin', false)
         })
     }
   },
