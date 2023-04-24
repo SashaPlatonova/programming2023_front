@@ -23,7 +23,7 @@
         color="orange lighten-2"
         text
       >
-        Explore
+        {{orderItem.status}}
       </v-btn>
 
       <v-spacer></v-spacer>

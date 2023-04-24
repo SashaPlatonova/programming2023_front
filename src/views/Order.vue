@@ -5,8 +5,11 @@
   </div>
   <div class="column">
   <v-row class="row">
+    <div v-if="orderItems.length===0" class="warning">
+      <p>У вас пока нет заказов</p>
+    </div>
     <OrderCard
-        v-for="orderItem in orderItems"
+        v-for="orderItem in currentList"
         :key="orderItem.id"
         :order-item="orderItem"
         class="card"
@@ -126,6 +129,26 @@
     <v-btn text color="primary" @click="filter('http://localhost:8000/api/order/filter/busy')">Фильтровать</v-btn>
     <v-btn text color="primary" @click="getOrders('http://localhost:8000/api/order/all')">Сбросить фильтр</v-btn>
 </div>
+    <div class="pers_filter" v-if="!checkAdmin()">
+      <div class="check">
+     <label class="toggler-wrapper style-20">
+          <input type="checkbox" v-model="free">
+          <div class="toggler-slider">
+            <div class="toggler-knob"></div>
+          </div>
+        </label>
+    </div>
+      <p style="margin-bottom: 20px"></p>
+    <div class="check">
+     <label class="toggler-wrapper style-21">
+          <input type="checkbox" v-model="checked">
+          <div class="toggler-slider">
+            <div class="toggler-knob"></div>
+          </div>
+        </label>
+    </div>
+      <v-btn text color="primary" @click="getOrders('http://localhost:8000/api/order/all?user=' + $route.params.id)">Сбросить фильтр</v-btn>
+    </div>
     </div>
 </section>
 </template>
@@ -150,6 +173,8 @@ export default {
     time_end: null,
     picker: null,
     time: null,
+    free: false,
+    currentList: [],
     computed: {
       id () {
         console.log('id', this.$route.params.id)
@@ -169,6 +194,7 @@ export default {
       })
         .then(res => {
           this.orderItems = res.data
+          this.currentList = this.orderItems
           for (let i = 0; i < this.orderItems.length; i++) {
             this.orderItems[i].time_start = this.timeConverter(this.orderItems[i].time_start)
             this.orderItems[i].time_end = this.timeConverter(this.orderItems[i].time_end)
@@ -232,11 +258,32 @@ export default {
     }
   },
   created () {
-    var apiURl = 'http://localhost:8000/api/order/all'
-    if (!(this.$cookies.get('isAdmin'))) {
-      apiURl = 'http://localhost:8000/api/order/all?user=' + this.$route.params.id
+    let apiURl = 'http://localhost:8000/api/order/all?user=' + this.$route.params.id
+    if (this.checkAdmin()) {
+      apiURl = 'http://localhost:8000/api/order/all'
     }
+    console.log(this.$cookies.get('isAdmin'))
     this.getOrders(apiURl)
+  },
+  watch: {
+    free (newFree) {
+      if (newFree) {
+        this.currentList = this.orderItems.filter(o => o.status.includes('Исполнен'))
+        console.log('true')
+      } else {
+        this.currentList = this.orderItems.filter(o => o.status.includes('Не исполнен'))
+        console.log('false')
+      }
+    }
+  },
+  computed: {
+    sortedArray () {
+      let sortedOrders = this.orderItems
+      sortedOrders = sortedOrders.sort((a, b) => {
+        return a.time_start - b.time_start
+      })
+      return sortedOrders
+    }
   }
 }
 </script>
@@ -305,7 +352,11 @@ export default {
   transition: all 300ms ease;
 }
   .toggler-wrapper.style-20 {
-  width: 200px;
+  width: 300px;
+  text-align: center;
+}
+  .toggler-wrapper.style-21 {
+  width: 300px;
   text-align: center;
 }
 
@@ -331,13 +382,40 @@ export default {
   /*background-image: url(../img/close-fill.svg);*/
   background-repeat: no-repeat;
   background-position: center;
-  width: 80px;
+  width: 130px;
+  display: inline-block;
+  left: -2px;
+}
+
+.toggler-wrapper.style-21 input[type="checkbox"]:checked+.toggler-slider .toggler-knob {
+  /*background-image: url(../img/check-fill.svg);*/
+}
+
+.toggler-wrapper.style-21 input[type="checkbox"]:checked+.toggler-slider .toggler-knob:before {
+  opacity: 0.4;
+}
+
+.toggler-wrapper.style-21 input[type="checkbox"]:checked+.toggler-slider .toggler-knob:after {
+  opacity: 1;
+}
+
+.toggler-wrapper.style-21 .toggler-slider {
+  background-color: #eb4f37;
+}
+
+.toggler-wrapper.style-21 .toggler-knob {
+  position: relative;
+  height: 100%;
+  /*background-image: url(../img/close-fill.svg);*/
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 130px;
   display: inline-block;
   left: -2px;
 }
 
 .toggler-wrapper.style-20 .toggler-knob:before {
-  content: 'Заняты';
+  content: 'Невыполнены';
   position: absolute;
   top: 50%;
   left: -20px;
@@ -350,7 +428,7 @@ export default {
 }
 
 .toggler-wrapper.style-20 .toggler-knob:after {
-  content: 'Свободны';
+  content: 'Выполнены';
   position: absolute;
   top: 50%;
   right: -23px;
@@ -361,5 +439,40 @@ export default {
   font-weight: 500;
   color: white;
   opacity: 0.4;
+}
+.toggler-wrapper.style-21 .toggler-knob:before {
+  content: 'Новые';
+  position: absolute;
+  top: 50%;
+  left: -20px;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  font-size: 75%;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: white;
+}
+
+.toggler-wrapper.style-21 .toggler-knob:after {
+  content: 'Старые';
+  position: absolute;
+  top: 50%;
+  right: -23px;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  font-size: 75%;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: white;
+  opacity: 0.4;
+}
+.warning{
+  margin: 30px 50%;
+  text-align: center;
+  font-size: 20px;
+  background-color: white;
+  color: white;
+  min-width: max-content;
+  padding: 20px;
 }
 </style>

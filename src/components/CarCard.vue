@@ -3,7 +3,7 @@
     class="mx-auto"
     max-width="344"
   >
-    <div class="delete_button" v-if="$cookies.get('token')!=='error'">
+    <div class="delete_button" v-if="$cookies.get('token')!=='error' && checkAdmin()">
       <v-icon color="#B71C1C" @click="deleteCar('http://localhost:8000/api/transport/delete/'+carItem.id+'/')">mdi-delete</v-icon>
     </div>
 
@@ -84,6 +84,12 @@ export default {
           console.log(error)
         })
       location.reload()
+    },
+    checkAdmin () {
+      if (this.$cookies.get('isAdmin') === 'true') {
+        return true
+      }
+      return false
     }
   }
 }

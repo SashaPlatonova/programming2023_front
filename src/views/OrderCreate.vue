@@ -55,7 +55,7 @@
       autocomplete="off"
       type="password"
     ></v-text-field>
-    <v-btn
+    <v-btn v-if="but"
       color="success"
       class="mr-4"
       @click="send_order"
@@ -88,6 +88,7 @@ export default {
     email: '',
     passport: '',
     us_password: '',
+    but: true,
     start_pass: '-',
     phone: '',
     transport_id: 0,
@@ -110,7 +111,9 @@ export default {
         this.pushUser()
       } else {
         this.updateUser('http://localhost:8000/api/residents/update/' + this.id + '/')
-        this.pushOrder()
+        if (this.message === '') {
+          this.pushOrder()
+        }
       }
     },
     async pushUser () {
@@ -149,6 +152,7 @@ export default {
         .then(res => {
           console.log(res)
           this.message = 'Заказ успешно создан'
+          this.but = false
         })
         .catch(function (error) {
           console.log(error)
@@ -200,8 +204,9 @@ export default {
     // eslint-disable-next-line camelcase
     timeConverter (UNIX_timestamp) {
       // eslint-disable-next-line camelcase
-      const a = new Date(Number(UNIX_timestamp))
-      console.log(UNIX_timestamp)
+      const a = new Date(Number(UNIX_timestamp * 1000))
+      console.log(Number(UNIX_timestamp))
+      console.log(a)
       const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
       const year = a.getFullYear()
       const month = months[a.getMonth()]
@@ -220,7 +225,7 @@ export default {
         email: this.email,
         passport: this.passport,
         username: this.username,
-        password: this.password,
+        password: this.us_password,
         phone: this.phone
       },
       {
@@ -231,12 +236,13 @@ export default {
         .then(response => {
           console.log(response)
           this.message = 'Ok'
-          this.$router.go()
+          return true
         })
         .catch(error => {
           this.message = 'Password is simple'
           console.log(error)
           this.$cookies.set('token', 'error')
+          return false
         })
     }
   },
