@@ -11,7 +11,7 @@
 
     <v-card-title>
 
-      Название: {{ orderItem.order_name}}
+      {{ orderItem.order_name}}
       <br>
     </v-card-title>
 
@@ -25,11 +25,18 @@
       >
         {{orderItem.status}}
       </v-btn>
+      <v-btn v-if="checkAdmin() && orderItem.status!='Исполнен'"
+        color="orange lighten-2"
+        text
+        @click="updateStatus('http://localhost:8000/api/order/update/' + orderItem.id + '/')"
+      >
+        Завершить
+      </v-btn>
 
       <v-spacer></v-spacer>
 
       <v-btn
-        icon
+        icon="mdi-chevron-up"
         @click="show = !show"
       >
         <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
@@ -63,6 +70,29 @@ export default {
   methods: {
     checkDate () {
       return (new Date().getDate() > this.orderItem.time_end)
+    },
+    // eslint-disable-next-line camelcase
+    async updateStatus (apiURL) {
+      await this.axios.put(apiURL, {
+        status: 'Исполнен'
+      }, {
+        headers: {
+          Authorization: 'Token ' + this.$cookies.get('token').toString()
+        }
+      })
+        .then(res => {
+          console.log(res)
+          this.$router.go()
+        })
+        .catch(err => {
+          console.log('error displaying subdivisionItems', err)
+        })
+    },
+    checkAdmin () {
+      if (this.$cookies.get('isAdmin') === 'true') {
+        return true
+      }
+      return false
     }
   }
 }

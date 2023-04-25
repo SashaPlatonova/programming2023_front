@@ -103,7 +103,7 @@ export default {
         type: parseInt(this.type),
         rent_cost: parseInt(this.rent_cost),
         length: this.length,
-        weight: this.weight,
+        width: this.weight,
         high: this.high
       },
       {
@@ -158,10 +158,10 @@ export default {
         }
         this.lengthArr.push(rounded(i))
       }
-      for (let i = this.typeItem.min_weight; i <= this.typeItem.max_weight; i = i + 0.1) {
-        if (this.typeItem.min_weight === 0) {
-          this.weightArr.push(this.typeItem.max_weight)
-          this.weight = this.typeItem.max_weight
+      for (let i = this.typeItem.min_width; i <= this.typeItem.max_width; i = i + 0.1) {
+        if (this.typeItem.min_width === 0) {
+          this.weightArr.push(this.typeItem.max_width)
+          this.weight = this.typeItem.max_width
           break
         }
         this.weightArr.push(rounded(i))

@@ -96,6 +96,7 @@ export default {
     time_end: 0,
     message: '',
     username: '',
+    guest: false,
     emailRules: [
       v => !!v || 'E-mail is required',
       v => /.+@.+/.test(v) || 'E-mail must be valid'
@@ -128,6 +129,7 @@ export default {
         .then(response => {
           console.log(response)
           this.id = response.data.id
+          this.singIn('http://localhost:8000/auth/token/login/')
           this.pushOrder()
         })
         .catch(error => {
@@ -156,6 +158,23 @@ export default {
         })
         .catch(function (error) {
           console.log(error)
+        })
+    },
+    async singIn (url) {
+      await this.axios.post(url, {
+        password: this.us_password,
+        username: this.username
+      })
+        .then(response => {
+          this.$cookies.set('token', response.data.auth_token)
+          console.log(this.$cookies.get('token'))
+          this.message = 'Ok'
+          this.$router.push('/start')
+          this.$router.go()
+        })
+        .catch(error => {
+          console.log(error)
+          this.$cookies.set('token', 'error')
         })
     },
     async getCars (apiURL) {
@@ -187,6 +206,7 @@ export default {
         .catch(err => {
           console.log('error displaying subdivisionItem', err)
           this.password = ''
+          this.guest = true
         })
     },
     async getNewInfo (URL) {
@@ -239,7 +259,7 @@ export default {
           return true
         })
         .catch(error => {
-          this.message = 'Password is simple'
+          this.message = error
           console.log(error)
           this.$cookies.set('token', 'error')
           return false

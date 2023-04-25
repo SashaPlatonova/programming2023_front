@@ -51,6 +51,7 @@
          Высота: {{ carItem.high}}
          Ширина: {{ carItem.width}}
          Длина: {{ carItem.length}}
+         Грузоподъемность: {{ carItem.type.load_capacity}}
         </v-card-text>
       </div>
     </v-expand-transition>

@@ -138,15 +138,6 @@
           </div>
         </label>
     </div>
-      <p style="margin-bottom: 20px"></p>
-    <div class="check">
-     <label class="toggler-wrapper style-21">
-          <input type="checkbox" v-model="checked">
-          <div class="toggler-slider">
-            <div class="toggler-knob"></div>
-          </div>
-        </label>
-    </div>
       <v-btn text color="primary" @click="getOrders('http://localhost:8000/api/order/all?user=' + $route.params.id)">Сбросить фильтр</v-btn>
     </div>
     </div>
@@ -246,6 +237,7 @@ export default {
       })
         .then(res => {
           this.orderItems = res.data
+          this.currentList = res.data
           for (let i = 0; i < this.orderItems.length; i++) {
             this.orderItems[i].time_start = this.timeConverter(this.orderItems[i].time_start)
             this.orderItems[i].time_end = this.timeConverter(this.orderItems[i].time_end)

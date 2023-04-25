@@ -46,6 +46,7 @@
          Высота: {{ carItem.high}}
          Ширина: {{ carItem.width}}
          Длина: {{ carItem.length}}
+          Грузоподъемность: {{ carItem.type.load_capacity}} т
         </v-card-text>
         <v-btn color="success" @click="$router.push('/orderCreate/' + carItem.id +'/' + dateBegin)">Забронировать</v-btn>
       </div>

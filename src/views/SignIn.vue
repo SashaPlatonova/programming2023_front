@@ -1,6 +1,6 @@
 <template>
     <section>
-    <h1>SignIn</h1>
+
         <v-card
   elevation="10"
   class = "mx-auto"
