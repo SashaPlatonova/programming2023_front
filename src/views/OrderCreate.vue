@@ -133,7 +133,7 @@ export default {
           this.pushOrder()
         })
         .catch(error => {
-          this.message = error
+          this.message = error.response.data
           console.log(error)
           this.$cookies.set('token', 'error')
         })

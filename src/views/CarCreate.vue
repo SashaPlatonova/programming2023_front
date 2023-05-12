@@ -8,7 +8,7 @@
         label="Name"
         required
       ></v-text-field>
-      <v-text-field
+      <v-text-field disabled
         v-model="type"
         label="Type"
         required
@@ -16,6 +16,8 @@
       <v-text-field
         v-model="rent_cost"
         label="Стоимость"
+        :rules="mainRules"
+        type="number"
         required
       ></v-text-field>
       <v-select
@@ -89,6 +91,10 @@ export default {
     weightArr: [],
     highArr: [],
     message_success: '',
+    mainRules: [
+      v => !!v || 'Это обязательное поле',
+      v => /[0-9]{*}/.test(v) || 'Проверьте введенную стоимость на валидность'
+    ],
     computed: {
       id () {
         console.log('id', this.$route.params.id)
@@ -119,6 +125,7 @@ export default {
         })
         .catch(function (error) {
           console.log(error)
+          this.message_success = error
         })
     },
     reset () {

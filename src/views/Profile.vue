@@ -18,11 +18,13 @@
       v-model="id"
       label="ID"
       required
+      disabled
     ></v-text-field>
   <v-text-field
       v-model="registration_num"
       label="registration_num"
       required
+      disabled
     ></v-text-field>
     <v-text-field
       v-model="full_name"
